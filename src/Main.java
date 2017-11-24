@@ -1,18 +1,17 @@
-import artnet4j.*;
-import artnet4j.events.*;
-import artnet4j.packets.*;
+import artnet4j.ArtNetException;
+import artnet4j.ArtNetServer;
+import artnet4j.events.ArtNetServerListener;
+import artnet4j.packets.ArtDmxPacket;
+import artnet4j.packets.ArtNetPacket;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.SocketException;
 
 public class Main {
-    private JFrame frame;
     private Robot r;
     private ArtNetServer artNetServer;
     private int oldkey;
@@ -32,7 +31,7 @@ public class Main {
         startArtNetServer();
         if (!SystemTray.isSupported()) {
             System.out.println("SystemTray is not supported");
-            frame = new JFrame("ArtNetKeys");
+            JFrame frame = new JFrame("ArtNetKeys");
             frame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
             frame.addWindowStateListener(e -> {
                 if (e.getNewState() == WindowEvent.WINDOW_CLOSING) {
@@ -40,7 +39,6 @@ public class Main {
                     System.exit(0);
                 }
             });
-
             frame.setMinimumSize(new Dimension(220, 50));
             frame.setVisible(true);
             return;
@@ -48,9 +46,7 @@ public class Main {
         final PopupMenu popup = new PopupMenu();
         final TrayIcon trayIcon;
         final SystemTray tray = SystemTray.getSystemTray();
-
         MenuItem exitItem = new MenuItem("Beenden");
-
         exitItem.addActionListener(e -> {
             artNetServer.stop();
             System.exit(0);
@@ -77,7 +73,6 @@ public class Main {
             artNetServer.addListener(new ArtNetServerListener() {
                 @Override
                 public void artNetPacketBroadcasted(ArtNetPacket artNetPacket) {
-
                 }
 
                 @Override
@@ -90,7 +85,6 @@ public class Main {
                         int d2 = Byte.toUnsignedInt(dmxdata[2]);
                         int d3 = Byte.toUnsignedInt(dmxdata[3]);
                         int d4 = d2 + d3;
-
                         if (oldkey != d0) {
                             if (d0 != 0) {
                                 click(96 + d0);
@@ -122,10 +116,8 @@ public class Main {
 
                 @Override
                 public void artNetServerStopped(ArtNetServer artNetServer) {
-
                 }
             });
-
         } catch (SocketException | ArtNetException e) {
             e.printStackTrace();
         }
@@ -138,7 +130,6 @@ public class Main {
             System.out.println("Taste " + key + " gedrueckt.");
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
-
         }
     }
 }
