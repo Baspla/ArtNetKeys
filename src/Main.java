@@ -22,13 +22,26 @@ public class Main {
     private int oldkey;
     private int oldkey2;
     private int oldkey3;
+    private int start;
 
     public static void main(String[] args) {
         System.out.println("http://www.kbdedit.com/manual/low_level_vk_list.html");
-        new Main();
+        int i = 0;
+        if (args.length >= 1) {
+            try {
+                i = new Integer(args[0]);
+                if(i>508){
+                    System.out.println("Whoah! Nur bis 508 (+4 >> 512).");
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+            new Main(i);
+        }
     }
 
-    private Main() {
+    private Main(int i) {
+        start = i;
         try {
             r = new Robot();
         } catch (AWTException e) {
@@ -72,6 +85,7 @@ public class Main {
     }
 
     //ArtNet DMX Stuff
+
     private void startArtNetServer() {
         artNetServer = new ArtNetServer();
         try {
@@ -86,10 +100,10 @@ public class Main {
                     if (artNetPacket instanceof ArtDmxPacket) {
                         ArtDmxPacket artDmxPacket = (ArtDmxPacket) artNetPacket;
                         byte[] dmxdata = artDmxPacket.getDmxData();
-                        int d0 = Byte.toUnsignedInt(dmxdata[0]);
-                        int d1 = Byte.toUnsignedInt(dmxdata[1]);
-                        int d2 = Byte.toUnsignedInt(dmxdata[2]);
-                        int d3 = Byte.toUnsignedInt(dmxdata[3]);
+                        int d0 = Byte.toUnsignedInt(dmxdata[start]);
+                        int d1 = Byte.toUnsignedInt(dmxdata[start + 1]);
+                        int d2 = Byte.toUnsignedInt(dmxdata[start + 2]);
+                        int d3 = Byte.toUnsignedInt(dmxdata[start + 3]);
                         int d4 = d2 + d3;
                         if (oldkey != d0) {
                             if (d0 != 0) {
