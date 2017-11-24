@@ -12,6 +12,10 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.SocketException;
 
+//Ab 112 F1,F2,F3...
+//Ab 65 A,B,C,...
+//KeyEvent.VK_ ...
+
 public class Main {
     private Robot r;
     private ArtNetServer artNetServer;
@@ -20,6 +24,7 @@ public class Main {
     private int oldkey3;
 
     public static void main(String[] args) {
+        System.out.println("http://www.kbdedit.com/manual/low_level_vk_list.html");
         new Main();
     }
 
