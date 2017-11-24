@@ -7,6 +7,7 @@ import artnet4j.packets.ArtNetPacket;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.SocketException;
@@ -87,7 +88,7 @@ public class Main {
                         int d4 = d2 + d3;
                         if (oldkey != d0) {
                             if (d0 != 0) {
-                                click(96 + d0);
+                                click(64 + ((d0 - 1) % 26) + 1);
                             }
                             oldkey = d0;
                         }
@@ -125,9 +126,10 @@ public class Main {
 
     private void click(int key) {
         try {
+            System.out.println("Taste " + key + " gedrueckt. (" + (char) key + ")");
             r.keyPress(key);
             r.keyRelease(key);
-            System.out.println("Taste " + key + " gedrueckt.");
+
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
