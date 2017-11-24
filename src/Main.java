@@ -15,12 +15,15 @@ public class Main {
     private JFrame frame;
     private Robot r;
     private ArtNetServer artNetServer;
+    private int oldkey;
+    private int oldkey2;
+    private int oldkey3;
 
     public static void main(String[] args) {
         new Main();
     }
 
-    public Main() {
+    private Main() {
         try {
             r = new Robot();
         } catch (AWTException e) {
@@ -67,7 +70,7 @@ public class Main {
     }
 
     //ArtNet DMX Stuff
-    void startArtNetServer() {
+    private void startArtNetServer() {
         artNetServer = new ArtNetServer();
         try {
             artNetServer.start();
@@ -82,14 +85,29 @@ public class Main {
                     if (artNetPacket instanceof ArtDmxPacket) {
                         ArtDmxPacket artDmxPacket = (ArtDmxPacket) artNetPacket;
                         byte[] dmxdata = artDmxPacket.getDmxData();
-                        System.out.println("Daten empfangen. SIZE: " + dmxdata.length);
-                        if (dmxdata.length >= 1) {
-                            if (dmxdata[0] != 0)
-                                click(96 + dmxdata[0]);
+                        int d0 = Byte.toUnsignedInt(dmxdata[0]);
+                        int d1 = Byte.toUnsignedInt(dmxdata[1]);
+                        int d2 = Byte.toUnsignedInt(dmxdata[2]);
+                        int d3 = Byte.toUnsignedInt(dmxdata[3]);
+                        int d4 = d2 + d3;
+
+                        if (oldkey != d0) {
+                            if (d0 != 0) {
+                                click(96 + d0);
+                            }
+                            oldkey = d0;
                         }
-                        if (dmxdata.length >= 2) {
-                            if (dmxdata[1] != 0)
-                                click(dmxdata[1]);
+                        if (oldkey2 != d1) {
+                            if (d1 != 0) {
+                                click(d1);
+                            }
+                            oldkey2 = d1;
+                        }
+                        if (oldkey3 != d4) {
+                            if (d4 != 0) {
+                                click(d4);
+                            }
+                            oldkey3 = d4;
                         }
                     }
                 }
@@ -108,16 +126,19 @@ public class Main {
                 }
             });
 
-        } catch (SocketException e) {
-            e.printStackTrace();
-        } catch (ArtNetException e) {
+        } catch (SocketException | ArtNetException e) {
             e.printStackTrace();
         }
     }
 
     private void click(int key) {
-        r.keyPress(key);
-        r.keyRelease(key);
-        System.out.println("Taste " + key + " gedrueckt.");
+        try {
+            r.keyPress(key);
+            r.keyRelease(key);
+            System.out.println("Taste " + key + " gedrueckt.");
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+
+        }
     }
 }
